@@ -52,6 +52,12 @@ namespace SuchByte.OBSWebSocketPlugin
         {
             PluginInstance.Main = this;
             MacroDeck.MacroDeck.OnMainWindowLoad += MacroDeck_OnMainWindowLoad;
+            MacroDeck.MacroDeck.OnMacroDeckLoaded += MacroDeck_OnMacroDeckLoaded;
+        }
+
+        private void MacroDeck_OnMacroDeckLoaded(object sender, EventArgs e)
+        {
+            _ = SetupAndStartAsync();
         }
 
         private void MacroDeck_OnMainWindowLoad(object sender, EventArgs e)
@@ -138,7 +144,6 @@ namespace SuchByte.OBSWebSocketPlugin
                 new InteractAction(),
                 new ToggleConnectionAction(),
             ];
-            _ = SetupAndStartAsync();
         }
 
         public async Task SetupAndStartAsync()
