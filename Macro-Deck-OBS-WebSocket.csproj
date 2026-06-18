@@ -51,11 +51,8 @@
         </EmbeddedResource>
     </ItemGroup>
 
-    <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="if not exist &quot;$(TargetDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot;" />
-        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionManifest.json&quot;" />
-        <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionIcon.png&quot;" />
-        <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\&quot;" />
-    </Target> -->
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;C:\Users\Johannes\AppData\Roaming\Macro Deck\plugins\SuchByte.OBS-WebSocketPlugin\$(TargetName).dll&quot;" />
+    </Target>
 
 </Project>

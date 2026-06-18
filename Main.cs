@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -48,6 +49,9 @@ namespace SuchByte.OBSWebSocketPlugin
 
         private MainWindow mainWindow;
 
+        private CancellationTokenSource _cancellationTokenSource;
+        private HashSet<string> _intentionalDisconnects = new();
+
         public Main()
         {
             PluginInstance.Main = this;
@@ -57,7 +61,11 @@ namespace SuchByte.OBSWebSocketPlugin
 
         private void MacroDeck_OnMacroDeckLoaded(object sender, EventArgs e)
         {
+            _cancellationTokenSource = new CancellationTokenSource();
+
             _ = SetupAndStartAsync();
+
+            _ = ConnectionMonitorLoopAsync(_cancellationTokenSource.Token);
         }
 
         private void MacroDeck_OnMainWindowLoad(object sender, EventArgs e)
@@ -159,15 +167,48 @@ namespace SuchByte.OBSWebSocketPlugin
 
             var credSet = PluginCredentials.GetPluginCredentials(this);
             var tasks = new List<Task>();
+
             foreach (var creds in credSet)
             {
                 var config = ConnectionConfig.FromCredentials(creds);
                 var connection = new Connection(config);
                 Connections.Add(config.name, connection);
+
                 tasks.Add(StoreConnectConnectionAsync(connection));
             }
 
             await Task.WhenAll(tasks);
+        }
+
+        private async Task ConnectionMonitorLoopAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                await Task.Delay(5000, token);
+
+                if (Connections == null)
+                    continue;
+
+                foreach (var pair in Connections)
+                {
+                    var connectionName = pair.Key;
+                    var connection = pair.Value;
+
+                    if (_intentionalDisconnects.Contains(connectionName))
+                    {
+                        continue;
+                    }
+
+                    if (!connection.IsConnected)
+                    {
+                        try
+                        {
+                            await StoreConnectConnectionAsync(connection);
+                        }
+                        catch { }
+                    }
+                }
+            }
         }
 
         public Task StoreConnectConnectionAsync(Connection connection)
@@ -546,6 +587,7 @@ namespace SuchByte.OBSWebSocketPlugin
 
         private void OnDisconnect(Connection connection)
         {
+            _intentionalDisconnects.Add(connection.Name);
             ResetVariables(connection);
 
             var numConnected = GetNumConnected();
@@ -565,11 +607,12 @@ namespace SuchByte.OBSWebSocketPlugin
                     })
                 );
             }
-            this.statusButton.AlertText = numConnected.ToString();
+            statusButton.AlertText = numConnected.ToString();
         }
 
         private void OnConnect(Connection connection)
         {
+            _intentionalDisconnects.Remove(connection.Name);
             UpdateAllVariables(connection);
             var numConnected = GetNumConnected();
             if (mainWindow != null && !mainWindow.IsDisposed && statusButton != null)
