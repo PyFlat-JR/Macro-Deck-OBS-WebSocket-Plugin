@@ -49,9 +49,11 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
             if (conn.IsConnected)
             {
                 conn.Dispose();
+                conn.ConnectionToggled(false);
             }
             else
             {
+                conn.ConnectionToggled(true);
                 var newConn = Connection.FromPrev(conn);
                 PluginInstance.Main.StoreConnectConnectionAsync(newConn);
             }

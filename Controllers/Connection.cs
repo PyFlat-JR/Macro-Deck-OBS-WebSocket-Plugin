@@ -32,6 +32,8 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public event EventHandler<EventArgs> Disposed;
 
+        public event EventHandler<bool> OnConnectionToggled;
+
         public Connection(ConnectionConfig config)
         {
             Config = config;
@@ -139,6 +141,11 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
                 PluginInstance.Main,
                 suggestions
             );
+        }
+
+        public void ConnectionToggled(bool isConnected)
+        {
+            OnConnectionToggled?.Invoke(this, isConnected);
         }
 
         public void Dispose()

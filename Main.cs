@@ -199,7 +199,7 @@ namespace SuchByte.OBSWebSocketPlugin
                         continue;
                     }
 
-                    if (!connection.IsConnected)
+                    if (!connection.OBS.IsConnected)
                     {
                         try
                         {
@@ -238,6 +238,17 @@ namespace SuchByte.OBSWebSocketPlugin
 
             obs.Connected += (sender, args) => OnConnect(conn);
             obs.Disposed += (sender, args) => OnDisconnect(conn);
+            conn.OnConnectionToggled += (sender, isConnected) =>
+            {
+                if (isConnected)
+                {
+                    _intentionalDisconnects.Remove(conn.Name);
+                }
+                else
+                {
+                    _intentionalDisconnects.Add(conn.Name);
+                }
+            };
 
             obs.ScenesEvents.CurrentProgramSceneChanged += (sender, args) =>
                 OnSceneChange(args, conn);
@@ -587,7 +598,6 @@ namespace SuchByte.OBSWebSocketPlugin
 
         private void OnDisconnect(Connection connection)
         {
-            _intentionalDisconnects.Add(connection.Name);
             ResetVariables(connection);
 
             var numConnected = GetNumConnected();
@@ -612,7 +622,6 @@ namespace SuchByte.OBSWebSocketPlugin
 
         private void OnConnect(Connection connection)
         {
-            _intentionalDisconnects.Remove(connection.Name);
             UpdateAllVariables(connection);
             var numConnected = GetNumConnected();
             if (mainWindow != null && !mainWindow.IsDisposed && statusButton != null)
