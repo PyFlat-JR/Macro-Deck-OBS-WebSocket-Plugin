@@ -1,15 +1,12 @@
-﻿using SuchByte.OBSWebSocketPlugin.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using SuchByte.OBSWebSocketPlugin.Controllers;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI.Interfaces
 {
     public interface IConnDepConfigs
     {
-        virtual Connection Conn {
+        virtual Connection Conn
+        {
             get
             {
                 var val = ConnectionSelector.Value ?? "";

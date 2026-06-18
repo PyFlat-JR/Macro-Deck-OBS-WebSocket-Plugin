@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SuchByte.OBSWebSocketPlugin.Language
+﻿namespace SuchByte.OBSWebSocketPlugin.Language
 {
     public class PluginStrings
     {
-
         public string __Language__ = "English";
         public string __LanguageCode__ = "en";
         public string __Author__ = "Macro Deck";
 
         public string ActionSourceVisibility = "Set OBS source visibility";
-        public string ActionSourceVisibilityDescription = "Hide/show/toggle scene source visibility";
+        public string ActionSourceVisibilityDescription =
+            "Hide/show/toggle scene source visibility";
         public string ActionFilterState = "Set OBS filter state";
         public string ActionFilterStateDescription = "Enable/disable/toggle filter state";
         public string ActionSetAudioMuted = "Set OBS audio source mute";
@@ -32,7 +28,8 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string ActionSetScene = "Set OBS scene";
         public string ActionSetSceneDescription = "Sets a configured scene as the active scene";
         public string ActionToggleConnection = "Toggle OBS connection";
-        public string ActionToggleConnectionDescription = "Toggles the connection between OBS and Macro Deck";
+        public string ActionToggleConnectionDescription =
+            "Toggles the connection between OBS and Macro Deck";
         public string Source = "Source";
         public string Mute = "Mute";
         public string Unmute = "Unmute";
@@ -42,14 +39,16 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Increase = "Increase";
         public string Decrease = "Decrease";
         public string Set = "Set";
-        public string ErrorNotConnected = "Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin";
+        public string ErrorNotConnected =
+            "Macro Deck is not connected to OBS. Please make sure, OBS and the OBS-WebSocket plugin are working properly and you configured the plugin";
         public string Name = "Name";
         public string Host = "Host";
         public string Password = "Password";
         public string AuthenticationFailed = "OBS Authentication failed";
         public string InfoWrongPassword = "Please make sure, you set the correct password";
         public string ConnectionFailed = "OBS Connection failed";
-        public string InfoWrongHost = "Please make sure, you set the correct host and OBS is running with the OBS-WebSocket plugin installed";
+        public string InfoWrongHost =
+            "Please make sure, you set the correct host and OBS is running with the OBS-WebSocket plugin installed";
         public string Profile = "Profile";
         public string Scene = "Scene";
         public string Start = "Start";
@@ -62,11 +61,13 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string OBSConnected = "OBS connected";
         public string OBSDisconnected = "OBS disconnected";
         public string ActionSaveReplayBuffer = "Save replay buffer";
-        public string ActionSaveReplayBufferDescription = "Saves the replay buffer\r\nThe replay buffer needs to be started to save the replay buffer!";
+        public string ActionSaveReplayBufferDescription =
+            "Saves the replay buffer\r\nThe replay buffer needs to be started to save the replay buffer!";
         public string ActionSetReplayBufferState = "Set OBS replay buffer state";
         public string ActionSetReplayBufferStateDescription = "Start/stop/toggle the replay buffer";
         public string VersionTypeToolTipTitle = "Version Type Configuration";
-        public string VersionTypeToolTipBody = "Determines the connection type to use. Only necessary to set if you know which connection type and don't want the delay of the automated check feature.";
+        public string VersionTypeToolTipBody =
+            "Determines the connection type to use. Only necessary to set if you know which connection type and don't want the delay of the automated check feature.";
         public string Version = "Version";
         public string Timeout = "Timeout";
         public string Auto = "Auto";
@@ -80,7 +81,8 @@ namespace SuchByte.OBSWebSocketPlugin.Language
         public string Value = "Value";
         public string Default = "Default";
         public string ActionInteract = "Interact with Input";
-        public string ActionInteractDescription = "Open the OBS dialog box to interact with a specific input source";
+        public string ActionInteractDescription =
+            "Open the OBS dialog box to interact with a specific input source";
     }
 }
 // PluginLanguageManager.PluginStrings.

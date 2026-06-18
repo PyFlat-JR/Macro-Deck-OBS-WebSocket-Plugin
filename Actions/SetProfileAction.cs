@@ -1,17 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
-using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
-using SuchByte.OBSWebSocketPlugin.Enum;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
@@ -19,7 +14,8 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionSetProfile;
 
-        public override string Description => PluginLanguageManager.PluginStrings.ActionSetProfileDescription;
+        public override string Description =>
+            PluginLanguageManager.PluginStrings.ActionSetProfileDescription;
 
         public override bool CanConfigure => true;
 
@@ -32,8 +28,12 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
                 try
                 {
                     var config = GetConfig<SetProfileConfig>();
-                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
-                    if (conn == null) return;
+                    var conn = PluginInstance.Main.Connections.GetValueOrDefault(
+                        config?.ConnectionName
+                            ?? PluginInstance.Main.Connections.FirstOrDefault().Key
+                    );
+                    if (conn == null)
+                        return;
 
                     _ = conn.OBS.ConfigRequests.SetCurrentProfileAsync(config.Profile);
                 }
@@ -41,7 +41,9 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
             }
         }
 
-        public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
+        public override ActionConfigControl GetActionConfigControl(
+            ActionConfigurator actionConfigurator
+        )
         {
             return new SetProfileConfigView(this, actionConfigurator);
         }

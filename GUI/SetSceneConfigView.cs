@@ -1,16 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -42,27 +40,33 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 return false;
             }
-            var config = JObject.FromObject(new SetSceneConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                SceneName = this.scenesBox.Text,
-            });
+            var config = JObject.FromObject(
+                new SetSceneConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    SceneName = this.scenesBox.Text,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
             this.pluginAction.ConfigurationSummary = this.scenesBox.Text;
             return true;
         }
 
-
         private void LoadScenes()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!(conn?.IsConnected ?? false))
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -77,15 +81,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     var name = scene["sceneName"]?.ToString();
                     if (!String.IsNullOrEmpty(name))
                     {
-                        scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
+                        scenesBox.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    scenesBox.Items.Add(name);
+                                }
+                        );
                     }
                 }
-                self.Invoke((MethodInvoker)delegate
-                {
-                    scenesBox.Text = config?.SceneName;
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            scenesBox.Text = config?.SceneName;
+                        }
+                );
             });
-
         }
 
         private void LoadConfig()
@@ -94,7 +106,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<SetSceneConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<SetSceneConfig>();
                 }
                 catch { }
             }

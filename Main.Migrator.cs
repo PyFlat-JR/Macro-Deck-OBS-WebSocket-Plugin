@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.ActionButton;
-using SuchByte.MacroDeck.DataTypes.Core;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.MacroDeck.Profiles;
 using SuchByte.MacroDeck.Variables;
 using SuchByte.OBSWebSocketPlugin.Actions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin
 {
@@ -29,7 +25,8 @@ namespace SuchByte.OBSWebSocketPlugin
                     MigrateConfigs();
                     MigrateActions();
                     SetCurrentVersion();
-                } else if (choice == DialogResult.No)
+                }
+                else if (choice == DialogResult.No)
                 {
                     var skip = PromptSkipUpdate();
                     if (skip == DialogResult.Yes)
@@ -97,7 +94,13 @@ namespace SuchByte.OBSWebSocketPlugin
             {
                 if (!variable.Name.StartsWith("obs_default_"))
                 {
-                    VariableManager.SetValue(String.Format("obs_default_{0}", variable.Name.Replace("obs_", "")), variable.Value, variable.VariableType, PluginInstance.Main, null);
+                    VariableManager.SetValue(
+                        String.Format("obs_default_{0}", variable.Name.Replace("obs_", "")),
+                        variable.Value,
+                        variable.VariableType,
+                        PluginInstance.Main,
+                        null
+                    );
                 }
             }
 
@@ -109,7 +112,10 @@ namespace SuchByte.OBSWebSocketPlugin
                     {
                         if (button.StateBindingVariable.StartsWith("obs_"))
                         {
-                            button.StateBindingVariable = String.Format("obs_default_{0}", button.StateBindingVariable.Replace("obs_", ""));
+                            button.StateBindingVariable = String.Format(
+                                "obs_default_{0}",
+                                button.StateBindingVariable.Replace("obs_", "")
+                            );
                         }
 
                         foreach (var action in button.Actions)
@@ -117,10 +123,17 @@ namespace SuchByte.OBSWebSocketPlugin
                             if (action.GetType() == typeof(ConditionAction))
                             {
                                 var condition = (ConditionAction)action;
-                                if (condition.ConditionType == ConditionType.Variable && condition.ConditionValue1Source.StartsWith("obs_"))
+                                if (
+                                    condition.ConditionType == ConditionType.Variable
+                                    && condition.ConditionValue1Source.StartsWith("obs_")
+                                )
                                 {
-                                    condition.ConditionValue1Source = String.Format("obs_default_{0}", condition.ConditionValue1Source.Replace("obs_", ""));
-                                };
+                                    condition.ConditionValue1Source = String.Format(
+                                        "obs_default_{0}",
+                                        condition.ConditionValue1Source.Replace("obs_", "")
+                                    );
+                                }
+                                ;
                             }
                         }
                         foreach (var action in button.ActionsRelease)
@@ -128,10 +141,17 @@ namespace SuchByte.OBSWebSocketPlugin
                             if (action.GetType() == typeof(ConditionAction))
                             {
                                 var condition = (ConditionAction)action;
-                                if (condition.ConditionType == ConditionType.Variable && condition.ConditionValue1Source.StartsWith("obs_"))
+                                if (
+                                    condition.ConditionType == ConditionType.Variable
+                                    && condition.ConditionValue1Source.StartsWith("obs_")
+                                )
                                 {
-                                    condition.ConditionValue1Source = String.Format("obs_default_{0}", condition.ConditionValue1Source.Replace("obs_", ""));
-                                };
+                                    condition.ConditionValue1Source = String.Format(
+                                        "obs_default_{0}",
+                                        condition.ConditionValue1Source.Replace("obs_", "")
+                                    );
+                                }
+                                ;
                             }
                         }
                         foreach (var action in button.ActionsLongPress)
@@ -139,10 +159,17 @@ namespace SuchByte.OBSWebSocketPlugin
                             if (action.GetType() == typeof(ConditionAction))
                             {
                                 var condition = (ConditionAction)action;
-                                if (condition.ConditionType == ConditionType.Variable && condition.ConditionValue1Source.StartsWith("obs_"))
+                                if (
+                                    condition.ConditionType == ConditionType.Variable
+                                    && condition.ConditionValue1Source.StartsWith("obs_")
+                                )
                                 {
-                                    condition.ConditionValue1Source = String.Format("obs_default_{0}", condition.ConditionValue1Source.Replace("obs_", ""));
-                                };
+                                    condition.ConditionValue1Source = String.Format(
+                                        "obs_default_{0}",
+                                        condition.ConditionValue1Source.Replace("obs_", "")
+                                    );
+                                }
+                                ;
                             }
                         }
                         foreach (var action in button.ActionsLongPressRelease)
@@ -150,27 +177,44 @@ namespace SuchByte.OBSWebSocketPlugin
                             if (action.GetType() == typeof(ConditionAction))
                             {
                                 var condition = (ConditionAction)action;
-                                if (condition.ConditionType == ConditionType.Variable && condition.ConditionValue1Source.StartsWith("obs_"))
+                                if (
+                                    condition.ConditionType == ConditionType.Variable
+                                    && condition.ConditionValue1Source.StartsWith("obs_")
+                                )
                                 {
-                                    condition.ConditionValue1Source = String.Format("obs_default_{0}", condition.ConditionValue1Source.Replace("obs_", ""));
-                                };
+                                    condition.ConditionValue1Source = String.Format(
+                                        "obs_default_{0}",
+                                        condition.ConditionValue1Source.Replace("obs_", "")
+                                    );
+                                }
+                                ;
                             }
                         }
                         foreach (var listener in button.EventListeners)
                         {
                             if (listener.Parameter.StartsWith("obs_"))
                             {
-                                listener.Parameter = String.Format("obs_default_{0}", listener.Parameter.Replace("obs_", ""));
+                                listener.Parameter = String.Format(
+                                    "obs_default_{0}",
+                                    listener.Parameter.Replace("obs_", "")
+                                );
                             }
                             foreach (var action in listener.Actions)
                             {
                                 if (action.GetType() == typeof(ConditionAction))
                                 {
                                     var condition = (ConditionAction)action;
-                                    if (condition.ConditionType == ConditionType.Variable && condition.ConditionValue1Source.StartsWith("obs_"))
+                                    if (
+                                        condition.ConditionType == ConditionType.Variable
+                                        && condition.ConditionValue1Source.StartsWith("obs_")
+                                    )
                                     {
-                                        condition.ConditionValue1Source = String.Format("obs_default_{0}", condition.ConditionValue1Source.Replace("obs_", ""));
-                                    };
+                                        condition.ConditionValue1Source = String.Format(
+                                            "obs_default_{0}",
+                                            condition.ConditionValue1Source.Replace("obs_", "")
+                                        );
+                                    }
+                                    ;
                                 }
                             }
                         }
@@ -218,7 +262,10 @@ namespace SuchByte.OBSWebSocketPlugin
                         {
                             var actionBase = action as ActionBase;
                             var actionConfig = actionBase?.GetConfig();
-                            if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
+                            if (
+                                actionBase != null
+                                && actionConfig.Version != actionConfig.TargetVersion
+                            )
                             {
                                 var newConfig = actionBase.GetConfig().UpgradeConfig();
                                 action.Configuration = JObject.FromObject(newConfig).ToString();
@@ -228,7 +275,10 @@ namespace SuchByte.OBSWebSocketPlugin
                         {
                             var actionBase = action as ActionBase;
                             var actionConfig = actionBase?.GetConfig();
-                            if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
+                            if (
+                                actionBase != null
+                                && actionConfig.Version != actionConfig.TargetVersion
+                            )
                             {
                                 var newConfig = actionBase.GetConfig().UpgradeConfig();
                                 action.Configuration = JObject.FromObject(newConfig).ToString();
@@ -238,7 +288,10 @@ namespace SuchByte.OBSWebSocketPlugin
                         {
                             var actionBase = action as ActionBase;
                             var actionConfig = actionBase?.GetConfig();
-                            if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
+                            if (
+                                actionBase != null
+                                && actionConfig.Version != actionConfig.TargetVersion
+                            )
                             {
                                 var newConfig = actionBase.GetConfig().UpgradeConfig();
                                 action.Configuration = JObject.FromObject(newConfig).ToString();
@@ -248,7 +301,10 @@ namespace SuchByte.OBSWebSocketPlugin
                         {
                             var actionBase = action as ActionBase;
                             var actionConfig = actionBase?.GetConfig();
-                            if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
+                            if (
+                                actionBase != null
+                                && actionConfig.Version != actionConfig.TargetVersion
+                            )
                             {
                                 var newConfig = actionBase.GetConfig().UpgradeConfig();
                                 action.Configuration = JObject.FromObject(newConfig).ToString();
@@ -260,7 +316,10 @@ namespace SuchByte.OBSWebSocketPlugin
                             {
                                 var actionBase = action as ActionBase;
                                 var actionConfig = actionBase?.GetConfig();
-                                if (actionBase != null && actionConfig.Version != actionConfig.TargetVersion)
+                                if (
+                                    actionBase != null
+                                    && actionConfig.Version != actionConfig.TargetVersion
+                                )
                                 {
                                     var newConfig = actionBase.GetConfig().UpgradeConfig();
                                     action.Configuration = JObject.FromObject(newConfig).ToString();

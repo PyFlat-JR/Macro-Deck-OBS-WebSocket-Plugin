@@ -15,18 +15,13 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
         public ConnectionConfig Config { get; }
         public string Name
         {
-            get
-            {
-                return Config.name;
-            }
+            get { return Config.name; }
         }
         public string VariableNS => ReplaceNonAlphaNumeric().Replace(Name, "_");
 
-        public Uri Host { 
-            get
-            {
-                return new Uri(Config.host);
-            }
+        public Uri Host
+        {
+            get { return new Uri(Config.host); }
         }
 
         public OBSWebSocket OBS { get; private set; }
@@ -39,7 +34,7 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public Connection(ConnectionConfig config)
         {
-            Config = config;   
+            Config = config;
             OBS = new OBSWebSocket();
         }
 
@@ -47,14 +42,16 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
         {
             return new Connection(prev.Config);
         }
-        
+
         public Task ConnectAsync()
         {
-            if (IsConnected) return Task.CompletedTask;
+            if (IsConnected)
+                return Task.CompletedTask;
 
             try
             {
-                if (Config.host == null) return Task.CompletedTask;
+                if (Config.host == null)
+                    return Task.CompletedTask;
 
                 var host = new Uri(Config.host);
 
@@ -70,7 +67,11 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
             }
             catch (Exception e)
             {
-                MacroDeckLogger.Error(PluginInstance.Main, $"Error occurred while connecting to OBS instance. Error message: \n{e.Message}");
+                MacroDeckLogger.Error(
+                    PluginInstance.Main,
+                    $"Error occurred while connecting to OBS instance. Error message: \n{e.Message}",
+                    []
+                );
             }
 
             return Task.CompletedTask;
@@ -83,7 +84,13 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public void SetVariable(string name, string value, string[] suggestions)
         {
-            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.String, PluginInstance.Main, suggestions);
+            MacroDeck.Variables.VariableManager.SetValue(
+                Main.VariablePrefix + VariableNS + "/" + name,
+                value,
+                MacroDeck.Variables.VariableType.String,
+                PluginInstance.Main,
+                suggestions
+            );
         }
 
         public void SetVariable(string name, int value)
@@ -93,7 +100,13 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public void SetVariable(string name, int value, string[] suggestions)
         {
-            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.Integer, PluginInstance.Main, suggestions);
+            MacroDeck.Variables.VariableManager.SetValue(
+                Main.VariablePrefix + VariableNS + "/" + name,
+                value,
+                MacroDeck.Variables.VariableType.Integer,
+                PluginInstance.Main,
+                suggestions
+            );
         }
 
         public void SetVariable(string name, float value)
@@ -103,7 +116,13 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public void SetVariable(string name, float value, string[] suggestions)
         {
-            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.Float, PluginInstance.Main, suggestions);
+            MacroDeck.Variables.VariableManager.SetValue(
+                Main.VariablePrefix + VariableNS + "/" + name,
+                value,
+                MacroDeck.Variables.VariableType.Float,
+                PluginInstance.Main,
+                suggestions
+            );
         }
 
         public void SetVariable(string name, bool value)
@@ -113,7 +132,13 @@ namespace SuchByte.OBSWebSocketPlugin.Controllers
 
         public void SetVariable(string name, bool value, string[] suggestions)
         {
-            MacroDeck.Variables.VariableManager.SetValue(Main.VariablePrefix + VariableNS + "/" + name, value, MacroDeck.Variables.VariableType.Bool, PluginInstance.Main, suggestions);
+            MacroDeck.Variables.VariableManager.SetValue(
+                Main.VariablePrefix + VariableNS + "/" + name,
+                value,
+                MacroDeck.Variables.VariableType.Bool,
+                PluginInstance.Main,
+                suggestions
+            );
         }
 
         public void Dispose()

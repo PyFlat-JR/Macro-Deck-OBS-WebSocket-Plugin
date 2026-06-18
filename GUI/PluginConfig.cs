@@ -1,21 +1,15 @@
-﻿using SuchByte.MacroDeck.GUI.CustomControls;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Logging;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.MacroDeck.Profiles;
-using SuchByte.OBSWebSocketPlugin.Actions;
 using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Windows.Media.Capture.Core;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -28,7 +22,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             btnClearVariables.Text = PluginLanguageManager.PluginStrings.ClearVariables;
             btnOk.Text = LanguageManager.Strings.Ok;
 
-            List<Dictionary<string, string>> credentials = PluginCredentials.GetPluginCredentials(PluginInstance.Main);
+            List<Dictionary<string, string>> credentials = PluginCredentials.GetPluginCredentials(
+                PluginInstance.Main
+            );
             if (credentials != null && credentials.Count > 0)
             {
                 var first = true;
@@ -38,9 +34,11 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     {
                         var config = new ConnectionConfig
                         {
-                            name = page.ContainsKey("name") ? page["name"] : PluginLanguageManager.PluginStrings.Default.ToLower(),
+                            name = page.ContainsKey("name")
+                                ? page["name"]
+                                : PluginLanguageManager.PluginStrings.Default.ToLower(),
                             host = page.ContainsKey("host") ? page["host"] : "",
-                            password = page.ContainsKey("password") ? page["password"] : ""
+                            password = page.ContainsKey("password") ? page["password"] : "",
                         };
                         if (!first)
                         {
@@ -67,7 +65,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 if (control is ConnectionConfigurator config)
                 {
-                    PluginCredentials.AddCredentials(PluginInstance.Main, config.Value.ToCredentials());
+                    PluginCredentials.AddCredentials(
+                        PluginInstance.Main,
+                        config.Value.ToCredentials()
+                    );
                 }
             }
 
@@ -79,13 +80,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     await PluginInstance.Main.SetupAndStartAsync();
                     if (PluginInstance.Main.GetNumConnected() > 0)
                     {
-                        self.Invoke((MethodInvoker)delegate { self.Close(); });
+                        self.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    self.Close();
+                                }
+                        );
                     }
                 });
             }
             catch (Exception ex)
             {
-                MacroDeckLogger.Error(PluginInstance.Main, $"Error: {ex.Message + Environment.NewLine + ex.StackTrace} ");
+                MacroDeckLogger.Error(
+                    PluginInstance.Main,
+                    $"Error: {ex.Message + Environment.NewLine + ex.StackTrace} ",
+                    []
+                );
             }
         }
 

@@ -1,22 +1,19 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class InteractConfigView : ActionConfigControl, IConnDepConfigs
     {
-
         PluginAction pluginAction;
         InteractConfig config;
 
@@ -39,27 +36,40 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         public override bool OnActionSave()
         {
-            var config = JObject.FromObject(new InteractConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                SceneName = this.scenesBox.Text,
-                SourceName = this.sourcesBox.Text,
-            });
+            var config = JObject.FromObject(
+                new InteractConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    SceneName = this.scenesBox.Text,
+                    SourceName = this.sourcesBox.Text,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
-            this.pluginAction.ConfigurationSummary = "Interact with " + (String.IsNullOrWhiteSpace(this.sourcesBox.Text) ? this.scenesBox.Text : this.sourcesBox.Text);
+            this.pluginAction.ConfigurationSummary =
+                "Interact with "
+                + (
+                    String.IsNullOrWhiteSpace(this.sourcesBox.Text)
+                        ? this.scenesBox.Text
+                        : this.sourcesBox.Text
+                );
             return true;
         }
 
         private void LoadScenes()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!conn?.IsConnected ?? false)
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -75,28 +85,41 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     var name = scene["sceneName"]?.ToString();
                     if (!name.Equals(String.Empty))
                     {
-                        scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
+                        scenesBox.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    scenesBox.Items.Add(name);
+                                }
+                        );
                     }
                 }
 
-                self.Invoke((MethodInvoker)delegate
-                {
-                    scenesBox.Text = config?.SceneName;
-                    LoadSources();
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            scenesBox.Text = config?.SceneName;
+                            LoadSources();
+                        }
+                );
             });
-
         }
 
         private void LoadSources()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!conn?.IsConnected ?? false)
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -115,14 +138,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                         var name = item["sourceName"]?.ToString();
                         if (!String.IsNullOrEmpty(name))
                         {
-                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                            sourcesBox.Invoke(
+                                (MethodInvoker)
+                                    delegate
+                                    {
+                                        sourcesBox.Items.Add(name);
+                                    }
+                            );
                         }
                     }
                 }
-                self.Invoke((MethodInvoker)delegate
-                {
-                    sourcesBox.Text = config?.SourceName;
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            sourcesBox.Text = config?.SourceName;
+                        }
+                );
             });
         }
 
@@ -132,7 +164,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<InteractConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<InteractConfig>();
                 }
                 catch { }
             }
@@ -144,7 +178,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             this.scenesBox.Text = config?.SceneName;
             this.sourcesBox.Text = config?.SourceName;
         }
-
 
         private void BtnReloadScenes_Click(object sender, EventArgs e)
         {
@@ -160,6 +193,5 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             LoadSources();
         }
-
     }
 }

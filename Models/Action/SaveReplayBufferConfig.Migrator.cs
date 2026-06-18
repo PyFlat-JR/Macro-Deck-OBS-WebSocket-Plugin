@@ -1,10 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using SuchByte.OBSWebSocketPlugin.Enum;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
@@ -12,7 +6,8 @@ namespace SuchByte.OBSWebSocketPlugin.Models.Action
     {
         protected override void Upgrade(int prevVersion)
         {
-            if (prevVersion == 0) V1();
+            if (prevVersion == 0)
+                V1();
         }
 
         private void V1()

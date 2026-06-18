@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
@@ -7,23 +10,20 @@ using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static OBSWebSocket5.Request.SceneItemsRequests;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class SetFilterStateConfigView : ActionConfigControl, IConnDepConfigs
     {
-
         PluginAction pluginAction;
         SetFilterStateConfig config;
 
         public ConnectionSelector ConnectionSelector => connectionSelector1;
 
-        public SetFilterStateConfigView(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public SetFilterStateConfigView(
+            PluginAction pluginAction,
+            ActionConfigurator actionConfigurator
+        )
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
@@ -61,29 +61,45 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 method = Enum.VisibilityMethodType.Toggle;
             }
-            var config = JObject.FromObject(new SetFilterStateConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                SceneName = this.scenesBox.Text,
-                SourceName = this.sourcesBox.Text,
-                FilterName = this.filtersBox.Text,
-                Method = method,
-            });
+            var config = JObject.FromObject(
+                new SetFilterStateConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    SceneName = this.scenesBox.Text,
+                    SourceName = this.sourcesBox.Text,
+                    FilterName = this.filtersBox.Text,
+                    Method = method,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
-            this.pluginAction.ConfigurationSummary = method.ToString() + " " + (String.IsNullOrWhiteSpace(this.sourcesBox.Text) ? this.scenesBox.Text : this.sourcesBox.Text) + "/" + this.filtersBox.Text;
+            this.pluginAction.ConfigurationSummary =
+                method.ToString()
+                + " "
+                + (
+                    String.IsNullOrWhiteSpace(this.sourcesBox.Text)
+                        ? this.scenesBox.Text
+                        : this.sourcesBox.Text
+                )
+                + "/"
+                + this.filtersBox.Text;
             return true;
         }
 
         private void LoadScenes()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!conn?.IsConnected ?? false)
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -99,28 +115,41 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     var name = scene["sceneName"]?.ToString();
                     if (!name.Equals(String.Empty))
                     {
-                        scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
+                        scenesBox.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    scenesBox.Items.Add(name);
+                                }
+                        );
                     }
                 }
 
-                self.Invoke((MethodInvoker)delegate
-                {
-                    scenesBox.Text = config?.SceneName;
-                    LoadSources();
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            scenesBox.Text = config?.SceneName;
+                            LoadSources();
+                        }
+                );
             });
-
         }
 
         private void LoadSources()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!conn?.IsConnected ?? false)
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -137,20 +166,26 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 {
                     await RecurseSourceResponse(conn, response.SceneItems);
                 }
-                self.Invoke((MethodInvoker)delegate
-                {
-                    sourcesBox.Text = config?.SourceName;
-                    LoadFilters();
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            sourcesBox.Text = config?.SourceName;
+                            LoadFilters();
+                        }
+                );
             });
         }
 
         private async Task RecurseSourceResponse(Connection conn, JObject[] sceneItems)
         {
-            foreach (JObject item in sceneItems) { 
+            foreach (JObject item in sceneItems)
+            {
                 if (item["isGroup"].Value<bool?>() == true)
                 {
-                    var sub = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(item["sourceName"]?.ToString());
+                    var sub = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(
+                        item["sourceName"]?.ToString()
+                    );
                     await RecurseSourceResponse(conn, sub.SceneItems);
                 }
                 else
@@ -158,7 +193,13 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     var name = item["sourceName"]?.ToString();
                     if (!String.IsNullOrEmpty(name))
                     {
-                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                        sourcesBox.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    sourcesBox.Items.Add(name);
+                                }
+                        );
                     }
                 }
             }
@@ -167,19 +208,27 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private void LoadFilters()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!conn?.IsConnected ?? false)
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
             this.filtersBox.Items.Clear();
             this.filtersBox.Text = String.Empty;
 
-            if (String.IsNullOrWhiteSpace(this.scenesBox.Text) && String.IsNullOrWhiteSpace(this.sourcesBox.Text))
+            if (
+                String.IsNullOrWhiteSpace(this.scenesBox.Text)
+                && String.IsNullOrWhiteSpace(this.sourcesBox.Text)
+            )
             {
                 return;
             }
@@ -189,7 +238,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             var sourceName = sourcesBox.Text;
             _ = Task.Run(async () =>
             {
-                var sceneResponse = await conn.OBS.FiltersRequests.GetSourceFilterListAsync(sceneName);
+                var sceneResponse = await conn.OBS.FiltersRequests.GetSourceFilterListAsync(
+                    sceneName
+                );
                 if (sceneResponse != null)
                 {
                     foreach (JObject filter in sceneResponse.Filters)
@@ -197,7 +248,13 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                         var name = filter["filterName"]?.ToString();
                         if (!String.IsNullOrWhiteSpace(name))
                         {
-                            filtersBox.Invoke((MethodInvoker)delegate { filtersBox.Items.Add(name); });
+                            filtersBox.Invoke(
+                                (MethodInvoker)
+                                    delegate
+                                    {
+                                        filtersBox.Items.Add(name);
+                                    }
+                            );
                         }
                     }
                 }
@@ -210,16 +267,24 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                         var name = filter["filterName"]?.ToString();
                         if (!String.IsNullOrWhiteSpace(name))
                         {
-                            filtersBox.Invoke((MethodInvoker)delegate { filtersBox.Items.Add(name); });
+                            filtersBox.Invoke(
+                                (MethodInvoker)
+                                    delegate
+                                    {
+                                        filtersBox.Items.Add(name);
+                                    }
+                            );
                         }
                     }
                 }
-                self.Invoke((MethodInvoker)delegate
-                {
-                    filtersBox.Text = config?.FilterName;
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            filtersBox.Text = config?.FilterName;
+                        }
+                );
             });
-
         }
 
         private void LoadConfig()
@@ -228,7 +293,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<SetFilterStateConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<SetFilterStateConfig>();
                 }
                 catch { }
             }
@@ -255,7 +322,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             }
         }
 
-
         private void BtnReloadScenes_Click(object sender, EventArgs e)
         {
             LoadScenes();
@@ -275,6 +341,5 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         {
             LoadFilters();
         }
-
     }
 }

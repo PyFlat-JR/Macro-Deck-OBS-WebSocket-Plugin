@@ -3,25 +3,27 @@
     <PropertyGroup>
         <RootNamespace>SuchByte.OBSWebSocketPlugin</RootNamespace>
         <AssemblyName>OBS-WebSocket Plugin</AssemblyName>
-	      <UseWindowsForms>true</UseWindowsForms>
+        <UseWindowsForms>true</UseWindowsForms>
         <Authors>Macro Deck, RecklessBoon</Authors>
         <Company>Macro Deck</Company>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Version>2.1.3</Version>
-	      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	      <NeutralLanguage>en</NeutralLanguage>
-	      <PackageProjectUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
-	      <RepositoryUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
-	      <Copyright>SuchByte</Copyright>
-        <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
+        <AssemblyVersion>2.1.2</AssemblyVersion>
+        <FileVersion>2.1.2</FileVersion>
+        <Version>2.1.2</Version>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <NeutralLanguage>en</NeutralLanguage>
+        <PackageProjectUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/RecklessBoon/Macro-Deck-OBS-WebSocket-Plugin</RepositoryUrl>
+        <Copyright>SuchByte</Copyright>
+        <TargetFramework>net10.0-windows10.0.19041</TargetFramework>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Resources\Languages\English.xml" />
-    <None Remove="Resources\Languages\German.xml" />
-    <None Remove="Resources\Languages\Italian.xml" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="Resources\Languages\English.xml" />
+        <None Remove="Resources\Languages\German.xml" />
+        <None Remove="Resources\Languages\Italian.xml" />
+    </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\Languages\English.xml" />
@@ -31,13 +33,7 @@
 
     <ItemGroup>
         <PackageReference Include="OBSWebSocket5" Version="0.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="Macro Deck 2">
-            <HintPath>$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Macro Deck 2.dll</HintPath>
-	    <Private>false</Private>
-        </Reference>
+        <PackageReference Include="SuchByte.MacroDeck" Version="2.15.0-b8" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,11 +51,11 @@
         </EmbeddedResource>
     </ItemGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="if not exist &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot;" />
+    <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="if not exist &quot;$(TargetDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot; mkdir &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin&quot;" />
         <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionManifest.json&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionManifest.json&quot;" />
         <Exec Command="copy /Y &quot;$(ProjectDir)ExtensionIcon.png&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\ExtensionIcon.png&quot;" />
         <Exec Command="copy /Y &quot;$(TargetDir)*.dll&quot; &quot;$(SolutionDir)..\Macro-Deck\MacroDeck\bin\$(ConfigurationName)\$(TargetFramework)\win-x64\Data\plugins\SuchByte.OBS-WebSocketPlugin\&quot;" />
-    </Target>
+    </Target> -->
 
 </Project>

@@ -1,30 +1,29 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using MethodInvoker = System.Windows.Forms.MethodInvoker;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class SetAudioMutedConfigView : ActionConfigControl, IConnDepConfigs
     {
-
         PluginAction pluginAction;
         SetAudioMutedConfig config;
 
         public ConnectionSelector ConnectionSelector => connectionSelector1;
 
-        public SetAudioMutedConfigView(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public SetAudioMutedConfigView(
+            PluginAction pluginAction,
+            ActionConfigurator actionConfigurator
+        )
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
@@ -60,12 +59,14 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 method = Enum.AudioMethodType.Toggle;
             }
-            var config = JObject.FromObject(new SetAudioMutedConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                SourceName = this.sourcesBox.Text,
-                Method = method,
-            });
+            var config = JObject.FromObject(
+                new SetAudioMutedConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    SourceName = this.sourcesBox.Text,
+                    Method = method,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
             this.pluginAction.ConfigurationSummary = method.ToString() + " " + this.sourcesBox.Text;
@@ -75,12 +76,17 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private void LoadSources()
         {
             var connection = (this as IConnDepConfigs).Conn;
-            if (connection == null) return;
+            if (connection == null)
+                return;
 
             if (!(connection?.IsConnected ?? false))
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -93,10 +99,19 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 var properties = specialResponse.GetType().GetProperties();
                 foreach (PropertyInfo input in properties)
                 {
-                    var name = specialResponse.GetType().GetProperty(input.Name).GetValue(specialResponse);
+                    var name = specialResponse
+                        .GetType()
+                        .GetProperty(input.Name)
+                        .GetValue(specialResponse);
                     if (!String.IsNullOrEmpty(name?.ToString()))
                     {
-                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                        sourcesBox.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    sourcesBox.Items.Add(name);
+                                }
+                        );
                     }
                 }
 
@@ -109,17 +124,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     {
                         if (!String.IsNullOrEmpty(name))
                         {
-                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                            sourcesBox.Invoke(
+                                (MethodInvoker)
+                                    delegate
+                                    {
+                                        sourcesBox.Items.Add(name);
+                                    }
+                            );
                         }
                     }
                 }
 
-                self.Invoke((MethodInvoker)delegate
-                {
-                    sourcesBox.Text = config?.SourceName;
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            sourcesBox.Text = config?.SourceName;
+                        }
+                );
             });
-
         }
 
         private void LoadConfig(object sender = null)
@@ -128,7 +151,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<SetAudioMutedConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<SetAudioMutedConfig>();
                 }
                 catch { }
             }
@@ -152,7 +177,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     break;
             }
         }
-
 
         private void BtnReloadSources_Click(object sender, EventArgs e)
         {

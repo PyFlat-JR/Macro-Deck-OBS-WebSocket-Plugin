@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using Font = System.Drawing.Font;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using SuchByte.MacroDeck.GUI;
+using Font = System.Drawing.Font;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
 {
-
     public class ContentSelectorButton : PictureBox
     {
         private bool _notification;
@@ -25,6 +18,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
             Invalidate();
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Selected
         {
             get => _selected;
@@ -74,15 +68,26 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
             }
             if (_selected)
             {
-                pe.Graphics.FillRectangle(new SolidBrush(Colors.AccentColor), Width - 3, 4, 3, Height - 8);
+                pe.Graphics.FillRectangle(
+                    new SolidBrush(Colors.AccentColor),
+                    Width - 3,
+                    4,
+                    3,
+                    Height - 8
+                );
             }
         }
     }
 
     public partial class ObsSelectorButton : ContentSelectorButton
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string AlertText { get; set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color AlertBackgroundColor { get; set; } = Color.CornflowerBlue;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color AlertForeColor { get; set; } = Color.White;
 
         public ObsSelectorButton()
@@ -96,9 +101,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
 
             var indicatorSize = 18;
             var indicatorRectangle = new RectangleF(
-                ClientRectangle.Width - indicatorSize * 1.25f, 
-                ClientRectangle.Height - indicatorSize * 1.5f, 
-                indicatorSize, 
+                ClientRectangle.Width - indicatorSize * 1.25f,
+                ClientRectangle.Height - indicatorSize * 1.5f,
+                indicatorSize,
                 indicatorSize
             );
 
@@ -110,7 +115,7 @@ namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center,
                 FormatFlags = StringFormatFlags.NoWrap,
-                Trimming = StringTrimming.None
+                Trimming = StringTrimming.None,
             };
             pe.Graphics.DrawString(AlertText, Font, brush, indicatorRectangle, format);
         }

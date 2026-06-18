@@ -1,17 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using MethodInvoker = System.Windows.Forms.MethodInvoker;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
@@ -23,7 +20,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         public ConnectionSelector ConnectionSelector => connectionSelector1;
 
-        public SetSourceVolumeConfigView(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public SetSourceVolumeConfigView(
+            PluginAction pluginAction,
+            ActionConfigurator actionConfigurator
+        )
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
@@ -60,28 +60,43 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 method = Enum.IncrementalMethodType.Set;
             }
-            var config = JObject.FromObject(new SetSourceVolumeConfig
-            {
-                ConnectionName = connectionSelector1.Value,
-                SourceName = sourcesBox.Text,
-                Method = method,
-                Decibel = (int)decibel.Value,
-            });
+            var config = JObject.FromObject(
+                new SetSourceVolumeConfig
+                {
+                    ConnectionName = connectionSelector1.Value,
+                    SourceName = sourcesBox.Text,
+                    Method = method,
+                    Decibel = (int)decibel.Value,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
-            this.pluginAction.ConfigurationSummary = this.sourcesBox.Text + " -> " + method + " -> " + this.lblToBy.Text + " -> " + this.decibel.Value + "dB";
+            this.pluginAction.ConfigurationSummary =
+                this.sourcesBox.Text
+                + " -> "
+                + method
+                + " -> "
+                + this.lblToBy.Text
+                + " -> "
+                + this.decibel.Value
+                + "dB";
             return true;
         }
 
         private void LoadSources()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!(conn?.IsConnected ?? false))
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -94,10 +109,19 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 var properties = specialResponse.GetType().GetProperties();
                 foreach (PropertyInfo input in properties)
                 {
-                    var name = specialResponse.GetType().GetProperty(input.Name).GetValue(specialResponse);
+                    var name = specialResponse
+                        .GetType()
+                        .GetProperty(input.Name)
+                        .GetValue(specialResponse);
                     if (!String.IsNullOrEmpty(name?.ToString()))
                     {
-                        sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                        sourcesBox.Invoke(
+                            (MethodInvoker)
+                                delegate
+                                {
+                                    sourcesBox.Items.Add(name);
+                                }
+                        );
                     }
                 }
 
@@ -110,17 +134,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     {
                         if (!String.IsNullOrEmpty(name))
                         {
-                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                            sourcesBox.Invoke(
+                                (MethodInvoker)
+                                    delegate
+                                    {
+                                        sourcesBox.Items.Add(name);
+                                    }
+                            );
                         }
                     }
                 }
 
-                self.Invoke((MethodInvoker)delegate
-                {
-                    sourcesBox.Text = config?.SourceName;
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            sourcesBox.Text = config?.SourceName;
+                        }
+                );
             });
-
         }
 
         private void LoadConfig()
@@ -129,7 +161,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<SetSourceVolumeConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<SetSourceVolumeConfig>();
                 }
                 catch { }
             }
@@ -176,6 +210,5 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 this.decibel.Minimum = -96;
             }
         }
-
     }
 }

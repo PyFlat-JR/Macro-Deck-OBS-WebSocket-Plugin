@@ -1,24 +1,22 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
-using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class ToggleConnectionConfigView : ActionConfigControl
     {
-
         PluginAction pluginAction;
         ToggleConnectionConfig config;
 
-        public ToggleConnectionConfigView(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public ToggleConnectionConfigView(
+            PluginAction pluginAction,
+            ActionConfigurator actionConfigurator
+        )
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
@@ -52,14 +50,17 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 selectionType = Enum.SelectionType.All;
             }
 
-            var config = JObject.FromObject(new ToggleConnectionConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                SelectionType = selectionType,
-            });
+            var config = JObject.FromObject(
+                new ToggleConnectionConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    SelectionType = selectionType,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
-            this.pluginAction.ConfigurationSummary = "Toggle Connection " + selectionType.ToString();
+            this.pluginAction.ConfigurationSummary =
+                "Toggle Connection " + selectionType.ToString();
             return true;
         }
 
@@ -69,7 +70,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<ToggleConnectionConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<ToggleConnectionConfig>();
                 }
                 catch { }
             }

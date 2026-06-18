@@ -1,13 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SuchByte.OBSWebSocketPlugin.Models.Action
 {
@@ -24,6 +17,7 @@ namespace SuchByte.OBSWebSocketPlugin.Models.Action
 
         [JsonIgnore]
         protected bool NeedsUpgrade => Version != TargetVersion;
+
         public ConfigBase UpgradeConfig()
         {
             var prevVersion = Version;
@@ -36,7 +30,10 @@ namespace SuchByte.OBSWebSocketPlugin.Models.Action
                         break;
                 }
 
-                if (prevVersion == Version) throw new ObsConfigUpgradeException(String.Format("Upgrade failed to upgrade from {0}", prevVersion));                    
+                if (prevVersion == Version)
+                    throw new ObsConfigUpgradeException(
+                        String.Format("Upgrade failed to upgrade from {0}", prevVersion)
+                    );
             }
             return this;
         }

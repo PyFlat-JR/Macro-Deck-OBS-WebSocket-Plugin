@@ -1,16 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
@@ -21,7 +19,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         public ConnectionSelector ConnectionSelector => connectionSelector1;
 
-        public SetProfileConfigView(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public SetProfileConfigView(
+            PluginAction pluginAction,
+            ActionConfigurator actionConfigurator
+        )
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
@@ -42,11 +43,13 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 return false;
             }
-            var config = JObject.FromObject(new SetProfileConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                Profile = this.profilesBox.Text,
-            });
+            var config = JObject.FromObject(
+                new SetProfileConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    Profile = this.profilesBox.Text,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
             this.pluginAction.ConfigurationSummary = this.profilesBox.Text;
@@ -56,12 +59,17 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
         private void LoadProfiles()
         {
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!(conn?.IsConnected ?? false))
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -73,12 +81,21 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 var response = await conn.OBS.ConfigRequests.GetProfileListAsync();
                 foreach (var profile in response.Profiles)
                 {
-                    profilesBox.Invoke((MethodInvoker)delegate { profilesBox.Items.Add(profile); });
+                    profilesBox.Invoke(
+                        (MethodInvoker)
+                            delegate
+                            {
+                                profilesBox.Items.Add(profile);
+                            }
+                    );
                 }
-                self.Invoke((MethodInvoker)delegate
-                {
-                    profilesBox.Text = config?.Profile;
-                });
+                self.Invoke(
+                    (MethodInvoker)
+                        delegate
+                        {
+                            profilesBox.Text = config?.Profile;
+                        }
+                );
             });
         }
 
@@ -88,7 +105,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<SetProfileConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<SetProfileConfig>();
                 }
                 catch { }
             }

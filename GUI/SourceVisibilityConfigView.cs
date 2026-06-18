@@ -1,31 +1,29 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
 using SuchByte.MacroDeck.Language;
 using SuchByte.MacroDeck.Plugins;
-using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Interfaces;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Windows.Media.Audio;
-using Windows.UI.Composition.Scenes;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class SourceVisibilityConfigView : ActionConfigControl, IConnDepConfigs
     {
-
         PluginAction pluginAction;
         SourceVisibilityConfig config;
 
         public ConnectionSelector ConnectionSelector => connectionSelector1;
 
-        public SourceVisibilityConfigView(PluginAction pluginAction, ActionConfigurator actionConfigurator)
+        public SourceVisibilityConfigView(
+            PluginAction pluginAction,
+            ActionConfigurator actionConfigurator
+        )
         {
             this.pluginAction = pluginAction;
             InitializeComponent();
@@ -46,7 +44,10 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
         public override bool OnActionSave()
         {
-            if (String.IsNullOrWhiteSpace(this.scenesBox.Text) || String.IsNullOrWhiteSpace(this.sourcesBox.Text))
+            if (
+                String.IsNullOrWhiteSpace(this.scenesBox.Text)
+                || String.IsNullOrWhiteSpace(this.sourcesBox.Text)
+            )
             {
                 return false;
             }
@@ -63,21 +64,25 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 method = Enum.VisibilityMethodType.Toggle;
             }
-            var config = JObject.FromObject(new SourceVisibilityConfig
-            {
-                ConnectionName = this.connectionSelector1.Value,
-                SceneName = this.scenesBox.Text,
-                SourceName = this.sourcesBox.Text,
-                Method = method,
-            });
+            var config = JObject.FromObject(
+                new SourceVisibilityConfig
+                {
+                    ConnectionName = this.connectionSelector1.Value,
+                    SceneName = this.scenesBox.Text,
+                    SourceName = this.sourcesBox.Text,
+                    Method = method,
+                }
+            );
 
             this.pluginAction.Configuration = config.ToString();
-            this.pluginAction.ConfigurationSummary = method.ToString() + " " + this.scenesBox.Text + "/" + this.sourcesBox.Text;
+            this.pluginAction.ConfigurationSummary =
+                method.ToString() + " " + this.scenesBox.Text + "/" + this.sourcesBox.Text;
             return true;
         }
 
         private CancellationTokenSource LoadingScenesTokenSource;
         private TaskCompletionSource LoadingScenes;
+
         private void LoadScenes()
         {
             if ((LoadingScenes?.Task.IsCompleted ?? true) != true)
@@ -87,16 +92,23 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 {
                     LoadingScenes.Task.Wait(LoadingScenesTokenSource.Token);
                 }
-                catch (OperationCanceledException) { /* do nothing */ }
+                catch (OperationCanceledException)
+                { /* do nothing */
+                }
             }
 
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!(conn?.IsConnected ?? false))
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -105,42 +117,64 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
 
             var self = this;
             LoadingScenesTokenSource = new CancellationTokenSource();
-            var task = Task.Run(async () =>
-            {
-                var sceneListResponse = await conn.OBS.ScenesRequests.GetSceneListAsync();
-
-                if (LoadingScenesTokenSource.Token.IsCancellationRequested) return;
-
-                foreach (JObject scene in sceneListResponse.Scenes)
+            var task = Task.Run(
+                async () =>
                 {
-                    var name = scene["sceneName"]?.ToString();
-                    if (!name.Equals(String.Empty))
-                    {
-                        scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(name); });
-                    }
+                    var sceneListResponse = await conn.OBS.ScenesRequests.GetSceneListAsync();
 
-                    var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(name);
-                    foreach (JObject item in response.SceneItems)
+                    if (LoadingScenesTokenSource.Token.IsCancellationRequested)
+                        return;
+
+                    foreach (JObject scene in sceneListResponse.Scenes)
                     {
-                        if (item["isGroup"].Value<bool?>() == true)
+                        var name = scene["sceneName"]?.ToString();
+                        if (!name.Equals(String.Empty))
                         {
-                            var groupName = item["sourceName"]?.ToString();
-                            scenesBox.Invoke((MethodInvoker)delegate { scenesBox.Items.Add(groupName); });
+                            scenesBox.Invoke(
+                                (MethodInvoker)
+                                    delegate
+                                    {
+                                        scenesBox.Items.Add(name);
+                                    }
+                            );
+                        }
+
+                        var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(
+                            name
+                        );
+                        foreach (JObject item in response.SceneItems)
+                        {
+                            if (item["isGroup"].Value<bool?>() == true)
+                            {
+                                var groupName = item["sourceName"]?.ToString();
+                                scenesBox.Invoke(
+                                    (MethodInvoker)
+                                        delegate
+                                        {
+                                            scenesBox.Items.Add(groupName);
+                                        }
+                                );
+                            }
                         }
                     }
-                }
 
-                self.Invoke((MethodInvoker)delegate
-                {
-                    scenesBox.Text = config?.SceneName;
-                    LoadSources();
-                });
-            }, LoadingScenesTokenSource.Token);
+                    self.Invoke(
+                        (MethodInvoker)
+                            delegate
+                            {
+                                scenesBox.Text = config?.SceneName;
+                                LoadSources();
+                            }
+                    );
+                },
+                LoadingScenesTokenSource.Token
+            );
             LoadingScenes = new TaskCompletionSource(task);
         }
 
         private CancellationTokenSource LoadingSourcesTokenSource;
         private TaskCompletionSource LoadingSources;
+
         private void LoadSources()
         {
             if ((LoadingSources?.Task.IsCompleted ?? true) != true)
@@ -149,16 +183,24 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                 try
                 {
                     LoadingSources.Task.Wait(LoadingSourcesTokenSource.Token);
-                } catch (OperationCanceledException) { /* do nothing */ }
+                }
+                catch (OperationCanceledException)
+                { /* do nothing */
+                }
             }
 
             var conn = (this as IConnDepConfigs).Conn;
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (!(conn?.IsConnected ?? false))
             {
                 using var msgBox = new MacroDeck.GUI.CustomControls.MessageBox();
-                msgBox.ShowDialog(LanguageManager.Strings.Error, PluginLanguageManager.PluginStrings.ErrorNotConnected, System.Windows.Forms.MessageBoxButtons.OK);
+                msgBox.ShowDialog(
+                    LanguageManager.Strings.Error,
+                    PluginLanguageManager.PluginStrings.ErrorNotConnected,
+                    System.Windows.Forms.MessageBoxButtons.OK
+                );
                 return;
             }
 
@@ -169,37 +211,54 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             var sceneName = scenesBox.Text;
 
             LoadingSourcesTokenSource = new CancellationTokenSource();
-            var task = Task.Run(async () =>
-            {
-                var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(sceneName);
-
-                if (LoadingSourcesTokenSource.Token.IsCancellationRequested) return;
-
-                var sceneItems = response?.SceneItems;
-                if (response == null)
+            var task = Task.Run(
+                async () =>
                 {
-                    var group_response = await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(sceneName);
-                    sceneItems = group_response?.SceneItems;
-                }
+                    var response = await conn.OBS.SceneItemsRequests.GetSceneItemListAsync(
+                        sceneName
+                    );
 
-                if (LoadingSourcesTokenSource.Token.IsCancellationRequested) return;
+                    if (LoadingSourcesTokenSource.Token.IsCancellationRequested)
+                        return;
 
-                if ((sceneItems?.Length ?? 0) > 0)
-                {
-                    foreach (JObject item in sceneItems)
+                    var sceneItems = response?.SceneItems;
+                    if (response == null)
                     {
-                        var name = item["sourceName"]?.ToString();
-                        if (!String.IsNullOrEmpty(name))
+                        var group_response =
+                            await conn.OBS.SceneItemsRequests.GetGroupSceneItemListAsync(sceneName);
+                        sceneItems = group_response?.SceneItems;
+                    }
+
+                    if (LoadingSourcesTokenSource.Token.IsCancellationRequested)
+                        return;
+
+                    if ((sceneItems?.Length ?? 0) > 0)
+                    {
+                        foreach (JObject item in sceneItems)
                         {
-                            sourcesBox.Invoke((MethodInvoker)delegate { sourcesBox.Items.Add(name); });
+                            var name = item["sourceName"]?.ToString();
+                            if (!String.IsNullOrEmpty(name))
+                            {
+                                sourcesBox.Invoke(
+                                    (MethodInvoker)
+                                        delegate
+                                        {
+                                            sourcesBox.Items.Add(name);
+                                        }
+                                );
+                            }
                         }
                     }
-                }
-                self.Invoke((MethodInvoker)delegate
-                {
-                    sourcesBox.Text = config?.SourceName;
-                });
-            }, LoadingSourcesTokenSource.Token);
+                    self.Invoke(
+                        (MethodInvoker)
+                            delegate
+                            {
+                                sourcesBox.Text = config?.SourceName;
+                            }
+                    );
+                },
+                LoadingSourcesTokenSource.Token
+            );
             LoadingSources = new TaskCompletionSource(task);
         }
 
@@ -209,7 +268,9 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
             {
                 try
                 {
-                    config = JObject.Parse(this.pluginAction.Configuration).ToObject<SourceVisibilityConfig>();
+                    config = JObject
+                        .Parse(this.pluginAction.Configuration)
+                        .ToObject<SourceVisibilityConfig>();
                 }
                 catch { }
             }
@@ -234,7 +295,6 @@ namespace SuchByte.OBSWebSocketPlugin.GUI
                     break;
             }
         }
-
 
         private void BtnReloadScenes_Click(object sender, EventArgs e)
         {

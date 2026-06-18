@@ -1,18 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
-using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Controllers;
-using SuchByte.OBSWebSocketPlugin.Enum;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
@@ -20,7 +16,8 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionFilterState;
 
-        public override string Description => PluginLanguageManager.PluginStrings.ActionFilterStateDescription;
+        public override string Description =>
+            PluginLanguageManager.PluginStrings.ActionFilterStateDescription;
 
         public override bool CanConfigure => true;
 
@@ -34,28 +31,50 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
                 {
                     var config = GetConfig<SetFilterStateConfig>();
 
-                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
-                    if (conn == null) return;
+                    Connection conn = PluginInstance.Main.Connections.GetValueOrDefault(
+                        config?.ConnectionName
+                            ?? PluginInstance.Main.Connections.FirstOrDefault().Key
+                    );
+                    if (conn == null)
+                        return;
 
                     string sceneName = config.SceneName;
                     string sourceName = config.SourceName;
-                    if (sourceName == String.Empty) sourceName = sceneName;
+                    if (sourceName == String.Empty)
+                        sourceName = sceneName;
                     string filterName = config.FilterName;
-                    string targetName = String.IsNullOrWhiteSpace(sourceName) ? sceneName : sourceName;
+                    string targetName = String.IsNullOrWhiteSpace(sourceName)
+                        ? sceneName
+                        : sourceName;
 
                     switch (config.Method)
                     {
                         case Enum.VisibilityMethodType.Hide:
-                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, false);
+                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(
+                                targetName,
+                                filterName,
+                                false
+                            );
                             break;
                         case Enum.VisibilityMethodType.Show:
-                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(targetName, filterName, true);
+                            _ = conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(
+                                targetName,
+                                filterName,
+                                true
+                            );
                             break;
                         case Enum.VisibilityMethodType.Toggle:
                             _ = Task.Run(async () =>
                             {
-                                var filter = await conn.OBS.FiltersRequests.GetSourceFilterAsync(sourceName, filterName);
-                                await conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(sourceName, filterName, !filter.FilterEnabled);
+                                var filter = await conn.OBS.FiltersRequests.GetSourceFilterAsync(
+                                    sourceName,
+                                    filterName
+                                );
+                                await conn.OBS.FiltersRequests.SetSourceFilterEnabledAsync(
+                                    sourceName,
+                                    filterName,
+                                    !filter.FilterEnabled
+                                );
                             });
                             break;
                     }
@@ -64,7 +83,9 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
             }
         }
 
-        public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
+        public override ActionConfigControl GetActionConfigControl(
+            ActionConfigurator actionConfigurator
+        )
         {
             return new SetFilterStateConfigView(this, actionConfigurator);
         }

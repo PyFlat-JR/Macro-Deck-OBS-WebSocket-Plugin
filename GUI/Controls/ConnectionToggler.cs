@@ -1,29 +1,20 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.ComponentModel;
+using System.Windows.Forms;
 using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI.Utilities;
 using SuchByte.OBSWebSocketPlugin.Language;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI.Controls
 {
-
     public partial class ConnectionToggler : UserControl
     {
         private Connection _Connection;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Connection Connection
         {
-            get
-            {
-                return _Connection;
-            }
+            get { return _Connection; }
             set
             {
                 this.InvokeIfRequired(() =>

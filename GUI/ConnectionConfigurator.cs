@@ -1,18 +1,11 @@
-﻿using SuchByte.OBSWebSocketPlugin.Language;
+﻿using System.Windows.Forms;
+using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 
 namespace SuchByte.OBSWebSocketPlugin.GUI
 {
     public partial class ConnectionConfigurator : UserControl
     {
-
         public ConnectionConfigurator()
         {
             InitializeComponent();

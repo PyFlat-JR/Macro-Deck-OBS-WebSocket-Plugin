@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SuchByte.MacroDeck.ActionButton;
 using SuchByte.MacroDeck.GUI;
 using SuchByte.MacroDeck.GUI.CustomControls;
-using SuchByte.MacroDeck.Plugins;
 using SuchByte.OBSWebSocketPlugin.Controllers;
 using SuchByte.OBSWebSocketPlugin.GUI;
 using SuchByte.OBSWebSocketPlugin.Language;
 using SuchByte.OBSWebSocketPlugin.Models.Action;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SuchByte.OBSWebSocketPlugin.Actions
 {
@@ -18,7 +14,8 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
     {
         public override string Name => PluginLanguageManager.PluginStrings.ActionToggleConnection;
 
-        public override string Description => PluginLanguageManager.PluginStrings.ActionToggleConnectionDescription;
+        public override string Description =>
+            PluginLanguageManager.PluginStrings.ActionToggleConnectionDescription;
 
         public override bool CanConfigure => true;
 
@@ -30,22 +27,24 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
 
             if (config.SelectionType == Enum.SelectionType.All)
             {
-                foreach(var pair in PluginInstance.Main.Connections)
+                foreach (var pair in PluginInstance.Main.Connections)
                 {
                     Toggle(pair.Value);
                 }
-            } else
+            }
+            else
             {
-                var conn = PluginInstance.Main.Connections.GetValueOrDefault(config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key);
+                var conn = PluginInstance.Main.Connections.GetValueOrDefault(
+                    config?.ConnectionName ?? PluginInstance.Main.Connections.FirstOrDefault().Key
+                );
                 Toggle(conn);
             }
-
-
         }
 
         private static void Toggle(Connection conn)
         {
-            if (conn == null) return;
+            if (conn == null)
+                return;
 
             if (conn.IsConnected)
             {
@@ -58,7 +57,9 @@ namespace SuchByte.OBSWebSocketPlugin.Actions
             }
         }
 
-        public override ActionConfigControl GetActionConfigControl(ActionConfigurator actionConfigurator)
+        public override ActionConfigControl GetActionConfigControl(
+            ActionConfigurator actionConfigurator
+        )
         {
             return new ToggleConnectionConfigView(this, actionConfigurator);
         }
